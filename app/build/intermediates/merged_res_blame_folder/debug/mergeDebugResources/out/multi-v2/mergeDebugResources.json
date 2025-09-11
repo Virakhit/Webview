@@ -2692,23 +2692,6 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\Verakit\\.gradle\\caches\\9.0-milestone-1\\transforms\\926df89c781bc7e9db7287ff343062ca\\transformed\\activity-1.9.2\\res\\values\\values.xml",
-                    "from": {
-                        "startLines": "2,3",
-                        "startColumns": "4,4",
-                        "startOffsets": "55,97",
-                        "endColumns": "41,59",
-                        "endOffsets": "92,152"
-                    },
-                    "to": {
-                        "startLines": "1829,1873",
-                        "startColumns": "4,4",
-                        "startOffsets": "121723,123946",
-                        "endColumns": "41,59",
-                        "endOffsets": "121760,124001"
-                    }
-                },
-                {
                     "source": "C:\\Project\\TestAPP\\app\\src\\main\\res\\values\\themes.xml",
                     "from": {
                         "startLines": "2",
@@ -2778,6 +2761,23 @@
                         "endLines": "1803,1836,1876,11478,11482",
                         "endColumns": "56,64,63,24,24",
                         "endOffsets": "120407,122102,124169,724438,724587"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\Verakit\\.gradle\\caches\\9.0-milestone-1\\transforms\\c69e06d8bc7894ab7ad5c3fd55d5cecb\\transformed\\activity-1.8.0\\res\\values\\values.xml",
+                    "from": {
+                        "startLines": "2,3",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,97",
+                        "endColumns": "41,59",
+                        "endOffsets": "92,152"
+                    },
+                    "to": {
+                        "startLines": "1829,1873",
+                        "startColumns": "4,4",
+                        "startOffsets": "121723,123946",
+                        "endColumns": "41,59",
+                        "endOffsets": "121760,124001"
                     }
                 },
                 {
