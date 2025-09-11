@@ -1,0 +1,16 @@
+R_DEF: Internal format may change without notice
+local
+id btnContinue
+id etBrand
+id etCompany
+id etOutlet
+id progressBar
+id webView
+layout activity_main
+layout activity_setup
+string action_save_continue
+string app_name
+string hint_brand
+string hint_company
+string hint_outlet
+style Theme.WebViewApp

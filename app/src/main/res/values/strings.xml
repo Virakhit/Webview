@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">WebViewApp</string>
+    <string name="hint_company">Company ID</string>
+    <string name="hint_brand">Brand ID</string>
+    <string name="hint_outlet">Outlet ID</string>
+    <string name="action_save_continue">Continue</string>
+</resources>
