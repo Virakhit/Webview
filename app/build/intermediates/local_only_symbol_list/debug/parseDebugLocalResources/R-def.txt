@@ -14,3 +14,4 @@ string hint_brand
 string hint_company
 string hint_outlet
 style Theme.WebViewApp
+xml file_paths

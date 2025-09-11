@@ -1,9 +1,20 @@
 -- Merging decision tree log ---
+provider#androidx.core.content.FileProvider
+INJECTED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:14:9-22:20
+	android:grantUriPermissions
+		ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:18:13-47
+	android:authorities
+		INJECTED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml
+		ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:16:13-64
+	android:exported
+		ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:17:13-37
+	android:name
+		ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:15:13-62
 manifest
-ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:2:1-26:12
-INJECTED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:2:1-26:12
-INJECTED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:2:1-26:12
-INJECTED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:2:1-26:12
+ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:2:1-38:12
+INJECTED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:2:1-38:12
+INJECTED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:2:1-38:12
+INJECTED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:2:1-38:12
 MERGED from [androidx.databinding:viewbinding:8.13.0] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\5a54cbda6de9f8f80d56cdb48e5f5204\transformed\viewbinding-8.13.0\AndroidManifest.xml:2:1-7:12
 MERGED from [com.google.android.material:material:1.12.0] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\17f8179d6590814b8b26833688e605e2\transformed\material-1.12.0\AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\f7c02a54f136a6c5011167921536e53a\transformed\constraintlayout-2.1.4\AndroidManifest.xml:2:1-11:12
@@ -62,9 +73,13 @@ uses-permission#android.permission.CAMERA
 ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:5:5-65
 	android:name
 		ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:5:22-62
+uses-permission#android.permission.READ_EXTERNAL_STORAGE
+ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:6:5-80
+	android:name
+		ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:6:22-77
 application
-ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:7:5-25:19
-INJECTED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:7:5-25:19
+ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:8:5-37:19
+INJECTED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:8:5-37:19
 MERGED from [com.google.android.material:material:1.12.0] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\17f8179d6590814b8b26833688e605e2\transformed\material-1.12.0\AndroidManifest.xml:22:5-20
 MERGED from [com.google.android.material:material:1.12.0] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\17f8179d6590814b8b26833688e605e2\transformed\material-1.12.0\AndroidManifest.xml:22:5-20
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\f7c02a54f136a6c5011167921536e53a\transformed\constraintlayout-2.1.4\AndroidManifest.xml:9:5-20
@@ -86,33 +101,39 @@ MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\Verakit\.gradle\ca
 	android:appComponentFactory
 		ADDED from [androidx.core:core:1.13.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\8311dabe6fb13f02ba9b7cd84b264754\transformed\core-1.13.1\AndroidManifest.xml:28:18-86
 	android:supportsRtl
-		ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:9:9-35
+		ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:10:9-35
 	android:label
-		ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:8:9-35
+		ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:9:9-32
 	android:theme
-		ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:10:9-48
+		ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:11:9-48
 activity#com.example.webviewapp.SetupActivity
-ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:12:9-14:40
+ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:24:9-26:40
 	android:exported
-		ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:14:13-37
+		ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:26:13-37
 	android:name
-		ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:13:13-42
+		ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:25:13-42
 activity#com.example.webviewapp.MainActivity
-ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:16:9-23:20
+ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:28:9-35:20
 	android:exported
-		ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:18:13-36
+		ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:30:13-36
 	android:name
-		ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:17:13-41
+		ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:29:13-41
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:19:13-22:29
+ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:31:13-34:29
 action#android.intent.action.MAIN
-ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:20:17-69
+ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:32:17-69
 	android:name
-		ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:20:25-66
+		ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:32:25-66
 category#android.intent.category.LAUNCHER
-ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:21:17-77
+ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:33:17-77
 	android:name
-		ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:21:27-74
+		ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:33:27-74
+meta-data#android.support.FILE_PROVIDER_PATHS
+ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:19:13-21:54
+	android:resource
+		ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:21:17-51
+	android:name
+		ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:20:17-67
 uses-sdk
 INJECTED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml

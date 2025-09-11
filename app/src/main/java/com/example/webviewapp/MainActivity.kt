@@ -12,8 +12,13 @@ import androidx.activity.result.contract.ActivityResultContracts.StartActivityFo
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient.FileChooserParams
 import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
+import androidx.core.content.FileProvider
+import java.io.File
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import android.view.KeyEvent
 import android.view.View
 import android.webkit.WebChromeClient
@@ -32,7 +37,13 @@ class MainActivity : AppCompatActivity() {
     private val requestCameraPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
             if (isGranted) {
-                onCameraPermissionGranted()
+                // If a file chooser is pending and camera permission was requested for it,
+                // open the camera picker. Otherwise, grant any pending web permission request.
+                if (pendingFileChooser != null) {
+                    openCameraPicker()
+                } else {
+                    onCameraPermissionGranted()
+                }
             } else {
                 // Permission denied: you can show a message or degrade functionality
             }
@@ -49,7 +60,10 @@ class MainActivity : AppCompatActivity() {
         val data = result.data
         val resultUris: Array<Uri>? = when {
             result.resultCode != Activity.RESULT_OK -> null
-            data == null -> null
+            data == null -> {
+                // Possibly returned from camera intent with EXTRA_OUTPUT -> use cameraPhotoUri
+                cameraPhotoUri?.let { arrayOf(it) }
+            }
             data.clipData != null -> {
                 val count = data.clipData!!.itemCount
                 Array(count) { i -> data.clipData!!.getItemAt(i).uri }
@@ -60,7 +74,12 @@ class MainActivity : AppCompatActivity() {
 
         pendingFileChooser?.onReceiveValue(resultUris)
         pendingFileChooser = null
+        // Clear the temporary camera uri after delivering the result
+        cameraPhotoUri = null
     }
+
+    // Helper to hold a camera photo uri while launching camera
+    private var cameraPhotoUri: Uri? = null
 
     // Launcher to request read external storage permission
     private val requestStoragePermissionLauncher =
@@ -141,6 +160,52 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun openCameraPicker() {
+        val takePictureIntent = Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE)
+        // Ensure there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(packageManager) != null) {
+            var photoFile: File? = null
+            try {
+                photoFile = createImageFile()
+            } catch (ex: IOException) {
+                // Error occurred while creating the File
+            }
+            // Continue only if the File was successfully created
+            photoFile?.also {
+                val authority = "${applicationContext.packageName}.fileprovider"
+                val photoURI: Uri = FileProvider.getUriForFile(this, authority, it)
+                cameraPhotoUri = photoURI
+                takePictureIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, photoURI)
+                // Grant temporary permission to camera activity
+                takePictureIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                try {
+                    pickFilesLauncher.launch(takePictureIntent)
+                } catch (e: Exception) {
+                    pendingFileChooser?.onReceiveValue(null)
+                    pendingFileChooser = null
+                }
+            } ?: run {
+                pendingFileChooser?.onReceiveValue(null)
+                pendingFileChooser = null
+            }
+        } else {
+            pendingFileChooser?.onReceiveValue(null)
+            pendingFileChooser = null
+        }
+    }
+
+    @Throws(IOException::class)
+    private fun createImageFile(): File {
+        // Create an image file name
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
+        val storageDir: File = getExternalFilesDir(null)!!
+        return File.createTempFile(
+            "JPEG_${timeStamp}_", /* prefix */
+            ".jpg", /* suffix */
+            storageDir /* directory */
+        )
+    }
+
     @SuppressLint("SetJavaScriptEnabled")
     private fun setupWebView() {
         val settings: WebSettings = webView.settings
@@ -185,6 +250,23 @@ class MainActivity : AppCompatActivity() {
                 // Save callback and launch picker (request storage permission first if needed)
                 pendingFileChooser = filePathCallback
                 val readPerm = android.Manifest.permission.READ_EXTERNAL_STORAGE
+                // Determine if capture is requested by the web input.
+                val wantsCapture = fileChooserParams?.isCaptureEnabled == true ||
+                        (fileChooserParams?.acceptTypes?.contains("image/*") == true && fileChooserParams.isCaptureEnabled)
+
+                if (wantsCapture) {
+                    // Ensure camera permission
+                    val cameraPerm = android.Manifest.permission.CAMERA
+                    if (ContextCompat.checkSelfPermission(this@MainActivity, cameraPerm) == PackageManager.PERMISSION_GRANTED) {
+                        openCameraPicker()
+                    } else {
+                        // request camera permission; once granted, onCameraPermissionGranted will call openCameraPicker if pendingFileChooser exists
+                        pendingPermissionRequest = null
+                        requestCameraPermissionLauncher.launch(cameraPerm)
+                    }
+                    return true
+                }
+
                 if (ContextCompat.checkSelfPermission(this@MainActivity, readPerm) == PackageManager.PERMISSION_GRANTED) {
                     openFilePicker(fileChooserParams)
                 } else {
