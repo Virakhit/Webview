@@ -7,6 +7,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import android.graphics.Bitmap
 import android.webkit.PermissionRequest
+import android.net.Uri
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import android.webkit.ValueCallback
+import android.webkit.WebChromeClient.FileChooserParams
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
@@ -34,6 +40,41 @@ class MainActivity : AppCompatActivity() {
 
     // Keep a pending PermissionRequest from the WebView while we ask the user for app permission
     private var pendingPermissionRequest: PermissionRequest? = null
+    
+    // Pending file chooser callback from WebView
+    private var pendingFileChooser: ValueCallback<Array<Uri>>? = null
+
+    // Launcher for picking files
+    private val pickFilesLauncher = registerForActivityResult(StartActivityForResult()) { result ->
+        val data = result.data
+        val resultUris: Array<Uri>? = when {
+            result.resultCode != Activity.RESULT_OK -> null
+            data == null -> null
+            data.clipData != null -> {
+                val count = data.clipData!!.itemCount
+                Array(count) { i -> data.clipData!!.getItemAt(i).uri }
+            }
+            data.data != null -> arrayOf(data.data!!)
+            else -> null
+        }
+
+        pendingFileChooser?.onReceiveValue(resultUris)
+        pendingFileChooser = null
+    }
+
+    // Launcher to request read external storage permission
+    private val requestStoragePermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+            if (isGranted) {
+                // If there was a pending file chooser, reopen it by sending an intent
+                pendingFileChooser?.let { _ ->
+                    openFilePicker()
+                }
+            } else {
+                pendingFileChooser?.onReceiveValue(null)
+                pendingFileChooser = null
+            }
+        }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -85,6 +126,21 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun openFilePicker(params: FileChooserParams? = null) {
+        val intent: Intent = params?.createIntent() ?: Intent(Intent.ACTION_GET_CONTENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "*/*"
+        }
+
+        try {
+            pickFilesLauncher.launch(Intent.createChooser(intent, "Select file"))
+        } catch (e: Exception) {
+            // If intent fails, return null to callback
+            pendingFileChooser?.onReceiveValue(null)
+            pendingFileChooser = null
+        }
+    }
+
     @SuppressLint("SetJavaScriptEnabled")
     private fun setupWebView() {
         val settings: WebSettings = webView.settings
@@ -94,7 +150,7 @@ class MainActivity : AppCompatActivity() {
         settings.loadWithOverviewMode = true
         settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
 
-        webView.webChromeClient = object : WebChromeClient() {
+    webView.webChromeClient = object : WebChromeClient() {
             override fun onPermissionRequest(request: PermissionRequest) {
                 // Called when a web page requests permission (e.g., camera via getUserMedia)
                 runOnUiThread {
@@ -119,6 +175,22 @@ class MainActivity : AppCompatActivity() {
                     pendingPermissionRequest = null
                 }
                 super.onPermissionRequestCanceled(request)
+            }
+
+            override fun onShowFileChooser(
+                webView: WebView?,
+                filePathCallback: ValueCallback<Array<Uri>>?,
+                fileChooserParams: FileChooserParams?
+            ): Boolean {
+                // Save callback and launch picker (request storage permission first if needed)
+                pendingFileChooser = filePathCallback
+                val readPerm = android.Manifest.permission.READ_EXTERNAL_STORAGE
+                if (ContextCompat.checkSelfPermission(this@MainActivity, readPerm) == PackageManager.PERMISSION_GRANTED) {
+                    openFilePicker(fileChooserParams)
+                } else {
+                    requestStoragePermissionLauncher.launch(readPerm)
+                }
+                return true
             }
         }
         webView.webViewClient = object : WebViewClient() {
