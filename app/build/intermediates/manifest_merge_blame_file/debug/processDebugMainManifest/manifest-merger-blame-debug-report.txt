@@ -35,8 +35,8 @@
 22-->[androidx.core:core:1.13.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\8311dabe6fb13f02ba9b7cd84b264754\transformed\core-1.13.1\AndroidManifest.xml:28:18-86
 23        android:debuggable="true"
 24        android:extractNativeLibs="false"
-25        android:label="GivyCRM"
-25-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:9:9-32
+25        android:label="GivyCRMDEV"
+25-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:9:9-35
 26        android:supportsRtl="true"
 26-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:10:9-35
 27        android:theme="@style/Theme.WebViewApp" >

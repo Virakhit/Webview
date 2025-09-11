@@ -103,7 +103,7 @@ MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\Verakit\.gradle\ca
 	android:supportsRtl
 		ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:10:9-35
 	android:label
-		ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:9:9-32
+		ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:9:9-35
 	android:theme
 		ADDED from C:\Project\TestAPP\app\src\main\AndroidManifest.xml:11:9-48
 activity#com.example.webviewapp.SetupActivity

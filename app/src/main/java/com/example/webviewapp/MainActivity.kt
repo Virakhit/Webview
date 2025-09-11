@@ -113,7 +113,7 @@ class MainActivity : AppCompatActivity() {
         setupWebView()
 
     val (company, brand, outlet) = Prefs.get(this)
-    val url = "https://cyberforall.net/GivyFE/$company,$brand,$outlet"
+    val url = "https://cyberforall.net/DEV/GivyFE/$company,$brand,$outlet"
         webView.loadUrl(url)
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {

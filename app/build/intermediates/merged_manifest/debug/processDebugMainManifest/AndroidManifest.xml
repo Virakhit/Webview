@@ -22,7 +22,7 @@
         android:appComponentFactory="androidx.core.app.CoreComponentFactory"
         android:debuggable="true"
         android:extractNativeLibs="false"
-        android:label="GivyCRM"
+        android:label="GivyCRMDEV"
         android:supportsRtl="true"
         android:theme="@style/Theme.WebViewApp" >
 
