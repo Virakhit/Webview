@@ -29,6 +29,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import android.util.Log
 
 class MainActivity : AppCompatActivity() {
 
@@ -122,6 +123,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d("MainActivity", "onCreate called")
 
     // Request camera permission at runtime if needed
     checkAndRequestCameraPermission()
@@ -137,7 +139,7 @@ class MainActivity : AppCompatActivity() {
         setupWebView()
 
         val (company, brand, outlet) = Prefs.get(this)
-        val url = "https://cyberforall.net/GivyFE/$company,$brand,$outlet"
+        val url = "https://cyberforall.net/DEV/GivyFE/$company,$brand,$outlet"
         webView.loadUrl(url)
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
@@ -150,8 +152,14 @@ class MainActivity : AppCompatActivity() {
     private fun checkAndRequestCameraPermission() {
         val permission = android.Manifest.permission.CAMERA
         when (ContextCompat.checkSelfPermission(this, permission)) {
-            PackageManager.PERMISSION_GRANTED -> onCameraPermissionGranted()
-            else -> requestCameraPermissionLauncher.launch(permission)
+            PackageManager.PERMISSION_GRANTED -> {
+                Log.d("MainActivity", "Camera permission already granted")
+                onCameraPermissionGranted()
+            }
+            else -> {
+                Log.d("MainActivity", "Requesting camera permission")
+                requestCameraPermissionLauncher.launch(permission)
+            }
         }
     }
 
@@ -185,34 +193,64 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openCameraPicker() {
+        Log.d("MainActivity", "openCameraPicker: start")
+        // First try standard ACTION_IMAGE_CAPTURE
         val takePictureIntent = Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE)
         // Ensure there's a camera activity to handle the intent
-        if (takePictureIntent.resolveActivity(packageManager) != null) {
-            var photoFile: File? = null
-            try {
-                photoFile = createImageFile()
-            } catch (ex: IOException) {
-                // Error occurred while creating the File
-            }
-            // Continue only if the File was successfully created
-            photoFile?.also {
-                val authority = "${applicationContext.packageName}.fileprovider"
-                val photoURI: Uri = FileProvider.getUriForFile(this, authority, it)
-                cameraPhotoUri = photoURI
-                takePictureIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, photoURI)
-                // Grant temporary permission to camera activity
-                takePictureIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        if (takePictureIntent.resolveActivity(packageManager) == null) {
+            Log.w("MainActivity", "openCameraPicker: ACTION_IMAGE_CAPTURE not resolved")
+        }
+
+        var photoFile: File? = null
+        try {
+            photoFile = createImageFile()
+            Log.d("MainActivity", "openCameraPicker: image file created: ${photoFile.absolutePath}")
+        } catch (ex: IOException) {
+            Log.e("MainActivity", "openCameraPicker: createImageFile failed", ex)
+        }
+
+        if (photoFile == null) {
+            Log.e("MainActivity", "openCameraPicker: photoFile is null - fallback to file picker")
+            // fallback to file picker so user can still attach an image
+            openFilePicker()
+            return
+        }
+
+        val authority = "${applicationContext.packageName}.fileprovider"
+        val photoURI: Uri = try {
+            FileProvider.getUriForFile(this, authority, photoFile)
+        } catch (e: IllegalArgumentException) {
+            Log.e("MainActivity", "openCameraPicker: FileProvider failed for file ${photoFile.absolutePath}", e)
+            openFilePicker()
+            return
+        }
+
+        cameraPhotoUri = photoURI
+        takePictureIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, photoURI)
+        takePictureIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
+        // Grant URI permissions to all activities that can handle the camera intent
+        val resInfoList = packageManager.queryIntentActivities(takePictureIntent, 0)
+        Log.d("MainActivity", "openCameraPicker: found ${resInfoList.size} activities to handle camera intent")
+        for (resolveInfo in resInfoList) {
+            val packageName = resolveInfo.activityInfo.packageName
+            grantUriPermission(packageName, photoURI, Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            Log.d("MainActivity", "openCameraPicker: granted URI permission to $packageName")
+        }
+
+        try {
+            pickFilesLauncher.launch(takePictureIntent)
+            Log.d("MainActivity", "openCameraPicker: launched camera intent")
+        } catch (e: Exception) {
+            Log.e("MainActivity", "openCameraPicker: failed to launch camera intent", e)
+            // revoke permissions and fallback
+            for (resolveInfo in resInfoList) {
                 try {
-                    pickFilesLauncher.launch(takePictureIntent)
-                } catch (e: Exception) {
-                    pendingFileChooser?.onReceiveValue(null)
-                    pendingFileChooser = null
-                }
-            } ?: run {
-                pendingFileChooser?.onReceiveValue(null)
-                pendingFileChooser = null
+                    revokeUriPermission(photoURI, Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                } catch (ignore: Exception) {}
             }
-        } else {
+            // fallback to generic file picker so user can still pick or capture via other apps
+            openFilePicker()
             pendingFileChooser?.onReceiveValue(null)
             pendingFileChooser = null
         }
@@ -312,31 +350,19 @@ class MainActivity : AppCompatActivity() {
                 filePathCallback: ValueCallback<Array<Uri>>?,
                 fileChooserParams: FileChooserParams?
             ): Boolean {
-                // Save callback and launch picker (request storage permission first if needed)
+                Log.d("MainActivity", "onShowFileChooser called")
                 pendingFileChooser = filePathCallback
-                val readPerm = android.Manifest.permission.READ_EXTERNAL_STORAGE
-                // Determine if capture is requested by the web input.
                 val wantsCapture = fileChooserParams?.isCaptureEnabled == true ||
                         (fileChooserParams?.acceptTypes?.contains("image/*") == true && fileChooserParams.isCaptureEnabled)
 
                 if (wantsCapture) {
-                    // Ensure camera permission
-                    val cameraPerm = android.Manifest.permission.CAMERA
-                    if (ContextCompat.checkSelfPermission(this@MainActivity, cameraPerm) == PackageManager.PERMISSION_GRANTED) {
-                        openCameraPicker()
-                    } else {
-                        // request camera permission; once granted, onCameraPermissionGranted will call openCameraPicker if pendingFileChooser exists
-                        pendingPermissionRequest = null
-                        requestCameraPermissionLauncher.launch(cameraPerm)
-                    }
+                    Log.d("MainActivity", "User wants to capture an image")
+                    openCameraPicker()
                     return true
                 }
 
-                if (ContextCompat.checkSelfPermission(this@MainActivity, readPerm) == PackageManager.PERMISSION_GRANTED) {
-                    openFilePicker(fileChooserParams)
-                } else {
-                    requestStoragePermissionLauncher.launch(readPerm)
-                }
+                Log.d("MainActivity", "Opening file picker")
+                openFilePicker(fileChooserParams)
                 return true
             }
         }
