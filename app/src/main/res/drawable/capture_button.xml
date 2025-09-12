@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- outer white ring with subtle stroke -->
+    <item>
+        <shape android:shape="oval">
+            <size android:width="88dp" android:height="88dp" />
+            <solid android:color="#FFFFFF" />
+            <stroke android:width="2dp" android:color="#DDDDDD" />
+        </shape>
+    </item>
+    <!-- inner circle (slightly smaller) keeps white fill -->
+    <item android:top="8dp" android:bottom="8dp" android:left="8dp" android:right="8dp">
+        <shape android:shape="oval">
+            <size android:width="72dp" android:height="72dp" />
+            <solid android:color="#FFFFFF" />
+        </shape>
+    </item>
+</layer-list>

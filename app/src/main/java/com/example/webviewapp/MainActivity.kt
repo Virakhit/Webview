@@ -32,6 +32,9 @@ import androidx.appcompat.app.AppCompatActivity
 class MainActivity : AppCompatActivity() {
 
     private lateinit var webView: WebView
+
+    // Set to true to bypass setup and DeviceRegistrar and load the app with fixed IDs
+    private val DEBUG_BYPASS_SETUP = true
     
     // Activity Result launcher for requesting camera permission
     private val requestCameraPermissionLauncher =
@@ -78,10 +81,28 @@ class MainActivity : AppCompatActivity() {
         cameraPhotoUri = null
     }
 
+    // Launcher to start the in-app CameraCaptureActivity which returns a content URI
+    private val inAppCameraLauncher = registerForActivityResult(StartActivityForResult()) { result ->
+        val data = result.data
+        val resultUris: Array<Uri>? = when {
+            result.resultCode != Activity.RESULT_OK -> null
+            data == null -> null
+            data.data != null -> arrayOf(data.data!!)
+            data.clipData != null -> {
+                val count = data.clipData!!.itemCount
+                Array(count) { i -> data.clipData!!.getItemAt(i).uri }
+            }
+            else -> null
+        }
+
+        pendingFileChooser?.onReceiveValue(resultUris)
+        pendingFileChooser = null
+    }
+
     // Helper to hold a camera photo uri while launching camera
     private var cameraPhotoUri: Uri? = null
 
-    // Launcher to request read external storage permission
+    // Launcher to request read external storage or media permission depending on SDK
     private val requestStoragePermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
             if (isGranted) {
@@ -102,24 +123,36 @@ class MainActivity : AppCompatActivity() {
     // Request camera permission at runtime if needed
     checkAndRequestCameraPermission()
 
-        // Attempt to register device automatically by UUID; replace with your real API URL
-        val apiUrl = "https://example.com/api/device/register"
-        DeviceRegistrar.registerDevice(this, apiUrl) { registered ->
-            if (!registered && !Prefs.isConfigured(this)) {
-                // Not registered and no local config: open setup
-                startActivity(Intent(this, SetupActivity::class.java))
-                finish()
-                return@registerDevice
-            }
-
-            // Either registered (Prefs saved) or already configured
+        if (DEBUG_BYPASS_SETUP) {
+            // Directly load the known testing IDs
             setContentView(R.layout.activity_main)
             webView = findViewById(R.id.webView)
             setupWebView()
-
-            val (company, brand, outlet) = Prefs.get(this)
-            val url = "https://cyberforall.net/GivyFE/$company,$brand,$outlet"
+            val company = "00039"
+            val brand = "00001"
+            val outlet = "00001"
+            val url = "https://cyberforall.net/DEV/GivyFE/$company,$brand,$outlet"
             webView.loadUrl(url)
+        } else {
+            // Attempt to register device automatically by UUID; replace with your real API URL
+            val apiUrl = "https://example.com/api/device/register"
+            DeviceRegistrar.registerDevice(this, apiUrl) { registered ->
+                if (!registered && !Prefs.isConfigured(this)) {
+                    // Not registered and no local config: open setup
+                    startActivity(Intent(this, SetupActivity::class.java))
+                    finish()
+                    return@registerDevice
+                }
+
+                // Either registered (Prefs saved) or already configured
+                setContentView(R.layout.activity_main)
+                webView = findViewById(R.id.webView)
+                setupWebView()
+
+                val (company, brand, outlet) = Prefs.get(this)
+                val url = "https://cyberforall.net/DEV/GivyFE/$company,$brand,$outlet"
+                webView.loadUrl(url)
+            }
         }
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
@@ -182,11 +215,28 @@ class MainActivity : AppCompatActivity() {
                 val photoURI: Uri = FileProvider.getUriForFile(this, authority, it)
                 cameraPhotoUri = photoURI
                 takePictureIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, photoURI)
-                // Grant temporary permission to camera activity
+                // Grant temporary permission to camera activity resolvers for the photo URI
                 takePictureIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                val resInfoList = packageManager.queryIntentActivities(takePictureIntent, 0)
+                for (resolveInfo in resInfoList) {
+                    val packageName = resolveInfo.activityInfo.packageName
+                    try {
+                        grantUriPermission(packageName, photoURI, Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    } catch (e: Exception) {
+                        // ignore
+                    }
+                }
+
                 try {
                     pickFilesLauncher.launch(takePictureIntent)
                 } catch (e: Exception) {
+                    // revoke granted permissions if launch failed
+                    for (resolveInfo in resInfoList) {
+                        try {
+                            revokeUriPermission(photoURI, Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        } catch (ignored: Exception) {
+                        }
+                    }
                     pendingFileChooser?.onReceiveValue(null)
                     pendingFileChooser = null
                 }
@@ -261,12 +311,18 @@ class MainActivity : AppCompatActivity() {
                         (fileChooserParams?.acceptTypes?.contains("image/*") == true && fileChooserParams.isCaptureEnabled)
 
                 if (wantsCapture) {
-                    // Ensure camera permission
+                    // Prefer in-app camera capture (more reliable across devices)
                     val cameraPerm = android.Manifest.permission.CAMERA
                     if (ContextCompat.checkSelfPermission(this@MainActivity, cameraPerm) == PackageManager.PERMISSION_GRANTED) {
-                        openCameraPicker()
+                        // Launch CameraCaptureActivity
+                        try {
+                            val intent = Intent(this@MainActivity, CameraCaptureActivity::class.java)
+                            inAppCameraLauncher.launch(intent)
+                        } catch (e: Exception) {
+                            // Fallback to external camera intent
+                            openCameraPicker()
+                        }
                     } else {
-                        // request camera permission; once granted, onCameraPermissionGranted will call openCameraPicker if pendingFileChooser exists
                         pendingPermissionRequest = null
                         requestCameraPermissionLauncher.launch(cameraPerm)
                     }
@@ -292,6 +348,15 @@ class MainActivity : AppCompatActivity() {
 
             override fun onPageFinished(view: WebView?, url: String?) {
                 findViewById<View>(R.id.progressBar)?.visibility = View.GONE
+                try {
+                    // retrieve primary color and format as hex string
+                    val colorInt = ContextCompat.getColor(this@MainActivity, R.color.colorPrimary)
+                    val hex = String.format("#%06X", 0xFFFFFF and colorInt)
+                    // inject localStorage key for web content
+                    view?.evaluateJavascript("localStorage.setItem('colorButtonText', '$hex');", null)
+                } catch (e: Exception) {
+                    // ignore if resources or JS injection fail
+                }
             }
         }
     }

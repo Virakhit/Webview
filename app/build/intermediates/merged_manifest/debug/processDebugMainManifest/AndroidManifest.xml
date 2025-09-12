@@ -10,7 +10,9 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <!-- For Android 13+ use READ_MEDIA_IMAGES; keep READ_EXTERNAL_STORAGE for older devices -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
 
     <permission
         android:name="com.example.webviewapp.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
@@ -39,16 +41,31 @@
 
         <activity
             android:name="com.example.webviewapp.SetupActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.example.webviewapp.CameraCaptureActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name="com.example.webviewapp.MainActivity"
-            android:exported="true" >
+            android:exported="true"
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name="androidx.camera.core.impl.MetadataHolderService"
+            android:enabled="false"
+            android:exported="false" >
+            <meta-data
+                android:name="androidx.camera.core.impl.MetadataHolderService.DEFAULT_CONFIG_PROVIDER"
+                android:value="androidx.camera.camera2.Camera2Config$DefaultProvider" />
+        </service>
 
         <provider
             android:name="androidx.startup.InitializationProvider"

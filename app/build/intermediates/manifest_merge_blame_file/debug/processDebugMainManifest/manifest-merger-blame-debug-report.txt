@@ -14,141 +14,173 @@
 12    <uses-permission android:name="android.permission.CAMERA" />
 12-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:5:5-65
 12-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:5:22-62
-13    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-13-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:6:5-80
-13-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:6:22-77
-14
-15    <permission
-15-->[androidx.core:core:1.13.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\8311dabe6fb13f02ba9b7cd84b264754\transformed\core-1.13.1\AndroidManifest.xml:22:5-24:47
-16        android:name="com.example.webviewapp.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
-16-->[androidx.core:core:1.13.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\8311dabe6fb13f02ba9b7cd84b264754\transformed\core-1.13.1\AndroidManifest.xml:23:9-81
-17        android:protectionLevel="signature" />
-17-->[androidx.core:core:1.13.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\8311dabe6fb13f02ba9b7cd84b264754\transformed\core-1.13.1\AndroidManifest.xml:24:9-44
-18
-19    <uses-permission android:name="com.example.webviewapp.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
-19-->[androidx.core:core:1.13.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\8311dabe6fb13f02ba9b7cd84b264754\transformed\core-1.13.1\AndroidManifest.xml:26:5-97
-19-->[androidx.core:core:1.13.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\8311dabe6fb13f02ba9b7cd84b264754\transformed\core-1.13.1\AndroidManifest.xml:26:22-94
+13    <!-- For Android 13+ use READ_MEDIA_IMAGES; keep READ_EXTERNAL_STORAGE for older devices -->
+14    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+14-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:7:5-80
+14-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:7:22-77
+15    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+15-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:8:5-76
+15-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:8:22-73
+16
+17    <permission
+17-->[androidx.core:core:1.13.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\8311dabe6fb13f02ba9b7cd84b264754\transformed\core-1.13.1\AndroidManifest.xml:22:5-24:47
+18        android:name="com.example.webviewapp.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+18-->[androidx.core:core:1.13.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\8311dabe6fb13f02ba9b7cd84b264754\transformed\core-1.13.1\AndroidManifest.xml:23:9-81
+19        android:protectionLevel="signature" />
+19-->[androidx.core:core:1.13.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\8311dabe6fb13f02ba9b7cd84b264754\transformed\core-1.13.1\AndroidManifest.xml:24:9-44
 20
-21    <application
-21-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:8:5-37:19
-22        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
-22-->[androidx.core:core:1.13.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\8311dabe6fb13f02ba9b7cd84b264754\transformed\core-1.13.1\AndroidManifest.xml:28:18-86
-23        android:debuggable="true"
-24        android:extractNativeLibs="false"
-25        android:label="GivyCRMDEV"
-25-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:9:9-35
-26        android:supportsRtl="true"
-26-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:10:9-35
-27        android:theme="@style/Theme.WebViewApp" >
-27-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:11:9-48
-28
-29        <!-- FileProvider for camera capture file URIs -->
-30        <provider
-31            android:name="androidx.core.content.FileProvider"
-31-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:15:13-62
-32            android:authorities="com.example.webviewapp.fileprovider"
-32-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:16:13-64
-33            android:exported="false"
-33-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:17:13-37
-34            android:grantUriPermissions="true" >
-34-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:18:13-47
-35            <meta-data
-35-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:19:13-21:54
-36                android:name="android.support.FILE_PROVIDER_PATHS"
-36-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:20:17-67
-37                android:resource="@xml/file_paths" />
-37-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:21:17-51
-38        </provider>
-39
-40        <activity
-40-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:24:9-26:40
-41            android:name="com.example.webviewapp.SetupActivity"
-41-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:25:13-42
-42            android:exported="false" />
-42-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:26:13-37
-43        <activity
-43-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:28:9-35:20
-44            android:name="com.example.webviewapp.MainActivity"
-44-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:29:13-41
-45            android:exported="true" >
-45-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:30:13-36
-46            <intent-filter>
-46-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:31:13-34:29
-47                <action android:name="android.intent.action.MAIN" />
-47-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:32:17-69
-47-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:32:25-66
-48
-49                <category android:name="android.intent.category.LAUNCHER" />
-49-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:33:17-77
-49-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:33:27-74
-50            </intent-filter>
-51        </activity>
-52
-53        <provider
-53-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\3fb4cf7483ecb3f284d1a17fc95154c1\transformed\emoji2-1.3.0\AndroidManifest.xml:24:9-32:20
-54            android:name="androidx.startup.InitializationProvider"
-54-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\3fb4cf7483ecb3f284d1a17fc95154c1\transformed\emoji2-1.3.0\AndroidManifest.xml:25:13-67
-55            android:authorities="com.example.webviewapp.androidx-startup"
-55-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\3fb4cf7483ecb3f284d1a17fc95154c1\transformed\emoji2-1.3.0\AndroidManifest.xml:26:13-68
-56            android:exported="false" >
-56-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\3fb4cf7483ecb3f284d1a17fc95154c1\transformed\emoji2-1.3.0\AndroidManifest.xml:27:13-37
-57            <meta-data
-57-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\3fb4cf7483ecb3f284d1a17fc95154c1\transformed\emoji2-1.3.0\AndroidManifest.xml:29:13-31:52
-58                android:name="androidx.emoji2.text.EmojiCompatInitializer"
-58-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\3fb4cf7483ecb3f284d1a17fc95154c1\transformed\emoji2-1.3.0\AndroidManifest.xml:30:17-75
-59                android:value="androidx.startup" />
-59-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\3fb4cf7483ecb3f284d1a17fc95154c1\transformed\emoji2-1.3.0\AndroidManifest.xml:31:17-49
-60            <meta-data
-60-->[androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\28e39af0de6ec8141aac58a549d5827a\transformed\lifecycle-process-2.6.2\AndroidManifest.xml:29:13-31:52
-61                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
-61-->[androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\28e39af0de6ec8141aac58a549d5827a\transformed\lifecycle-process-2.6.2\AndroidManifest.xml:30:17-78
-62                android:value="androidx.startup" />
-62-->[androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\28e39af0de6ec8141aac58a549d5827a\transformed\lifecycle-process-2.6.2\AndroidManifest.xml:31:17-49
-63            <meta-data
-63-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:29:13-31:52
-64                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
-64-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:30:17-85
-65                android:value="androidx.startup" />
-65-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:31:17-49
-66        </provider>
-67
-68        <receiver
-68-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:34:9-52:20
-69            android:name="androidx.profileinstaller.ProfileInstallReceiver"
-69-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:35:13-76
-70            android:directBootAware="false"
-70-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:36:13-44
-71            android:enabled="true"
-71-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:37:13-35
-72            android:exported="true"
-72-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:38:13-36
-73            android:permission="android.permission.DUMP" >
-73-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:39:13-57
-74            <intent-filter>
-74-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:40:13-42:29
-75                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
-75-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:17-91
-75-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:25-88
-76            </intent-filter>
-77            <intent-filter>
-77-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:43:13-45:29
-78                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
-78-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:17-85
-78-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:25-82
-79            </intent-filter>
-80            <intent-filter>
-80-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:46:13-48:29
-81                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
-81-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:17-88
-81-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:25-85
-82            </intent-filter>
-83            <intent-filter>
-83-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:49:13-51:29
-84                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
-84-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:17-95
-84-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:25-92
-85            </intent-filter>
-86        </receiver>
-87    </application>
-88
-89</manifest>
+21    <uses-permission android:name="com.example.webviewapp.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+21-->[androidx.core:core:1.13.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\8311dabe6fb13f02ba9b7cd84b264754\transformed\core-1.13.1\AndroidManifest.xml:26:5-97
+21-->[androidx.core:core:1.13.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\8311dabe6fb13f02ba9b7cd84b264754\transformed\core-1.13.1\AndroidManifest.xml:26:22-94
+22
+23    <application
+23-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:10:5-46:19
+24        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+24-->[androidx.core:core:1.13.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\8311dabe6fb13f02ba9b7cd84b264754\transformed\core-1.13.1\AndroidManifest.xml:28:18-86
+25        android:debuggable="true"
+26        android:extractNativeLibs="false"
+27        android:label="GivyCRMDEV"
+27-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:11:9-35
+28        android:supportsRtl="true"
+28-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:12:9-35
+29        android:theme="@style/Theme.WebViewApp" >
+29-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:13:9-48
+30
+31        <!-- FileProvider for camera capture file URIs -->
+32        <provider
+33            android:name="androidx.core.content.FileProvider"
+33-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:17:13-62
+34            android:authorities="com.example.webviewapp.fileprovider"
+34-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:18:13-64
+35            android:exported="false"
+35-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:19:13-37
+36            android:grantUriPermissions="true" >
+36-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:20:13-47
+37            <meta-data
+37-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:21:13-23:54
+38                android:name="android.support.FILE_PROVIDER_PATHS"
+38-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:22:17-67
+39                android:resource="@xml/file_paths" />
+39-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:23:17-51
+40        </provider>
+41
+42        <activity
+42-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:26:9-29:52
+43            android:name="com.example.webviewapp.SetupActivity"
+43-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:27:13-42
+44            android:exported="false"
+44-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:28:13-37
+45            android:screenOrientation="portrait" />
+45-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:29:13-49
+46        <activity
+46-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:31:9-34:52
+47            android:name="com.example.webviewapp.CameraCaptureActivity"
+47-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:32:13-50
+48            android:exported="false"
+48-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:33:13-37
+49            android:screenOrientation="portrait" />
+49-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:34:13-49
+50        <activity
+50-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:36:9-44:20
+51            android:name="com.example.webviewapp.MainActivity"
+51-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:37:13-41
+52            android:exported="true"
+52-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:38:13-36
+53            android:screenOrientation="portrait" >
+53-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:39:13-49
+54            <intent-filter>
+54-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:40:13-43:29
+55                <action android:name="android.intent.action.MAIN" />
+55-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:41:17-69
+55-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:41:25-66
+56
+57                <category android:name="android.intent.category.LAUNCHER" />
+57-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:42:17-77
+57-->C:\Project\TestAPP\app\src\main\AndroidManifest.xml:42:27-74
+58            </intent-filter>
+59        </activity>
+60
+61        <service
+61-->[androidx.camera:camera-camera2:1.2.3] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\3375439d36cce5ce93b9d2f3900c1859\transformed\camera-camera2-1.2.3\AndroidManifest.xml:24:9-33:19
+62            android:name="androidx.camera.core.impl.MetadataHolderService"
+62-->[androidx.camera:camera-camera2:1.2.3] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\3375439d36cce5ce93b9d2f3900c1859\transformed\camera-camera2-1.2.3\AndroidManifest.xml:25:13-75
+63            android:enabled="false"
+63-->[androidx.camera:camera-camera2:1.2.3] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\3375439d36cce5ce93b9d2f3900c1859\transformed\camera-camera2-1.2.3\AndroidManifest.xml:26:13-36
+64            android:exported="false" >
+64-->[androidx.camera:camera-camera2:1.2.3] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\3375439d36cce5ce93b9d2f3900c1859\transformed\camera-camera2-1.2.3\AndroidManifest.xml:27:13-37
+65            <meta-data
+65-->[androidx.camera:camera-camera2:1.2.3] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\3375439d36cce5ce93b9d2f3900c1859\transformed\camera-camera2-1.2.3\AndroidManifest.xml:30:13-32:89
+66                android:name="androidx.camera.core.impl.MetadataHolderService.DEFAULT_CONFIG_PROVIDER"
+66-->[androidx.camera:camera-camera2:1.2.3] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\3375439d36cce5ce93b9d2f3900c1859\transformed\camera-camera2-1.2.3\AndroidManifest.xml:31:17-103
+67                android:value="androidx.camera.camera2.Camera2Config$DefaultProvider" />
+67-->[androidx.camera:camera-camera2:1.2.3] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\3375439d36cce5ce93b9d2f3900c1859\transformed\camera-camera2-1.2.3\AndroidManifest.xml:32:17-86
+68        </service>
+69
+70        <provider
+70-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\3fb4cf7483ecb3f284d1a17fc95154c1\transformed\emoji2-1.3.0\AndroidManifest.xml:24:9-32:20
+71            android:name="androidx.startup.InitializationProvider"
+71-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\3fb4cf7483ecb3f284d1a17fc95154c1\transformed\emoji2-1.3.0\AndroidManifest.xml:25:13-67
+72            android:authorities="com.example.webviewapp.androidx-startup"
+72-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\3fb4cf7483ecb3f284d1a17fc95154c1\transformed\emoji2-1.3.0\AndroidManifest.xml:26:13-68
+73            android:exported="false" >
+73-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\3fb4cf7483ecb3f284d1a17fc95154c1\transformed\emoji2-1.3.0\AndroidManifest.xml:27:13-37
+74            <meta-data
+74-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\3fb4cf7483ecb3f284d1a17fc95154c1\transformed\emoji2-1.3.0\AndroidManifest.xml:29:13-31:52
+75                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+75-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\3fb4cf7483ecb3f284d1a17fc95154c1\transformed\emoji2-1.3.0\AndroidManifest.xml:30:17-75
+76                android:value="androidx.startup" />
+76-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\3fb4cf7483ecb3f284d1a17fc95154c1\transformed\emoji2-1.3.0\AndroidManifest.xml:31:17-49
+77            <meta-data
+77-->[androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\28e39af0de6ec8141aac58a549d5827a\transformed\lifecycle-process-2.6.2\AndroidManifest.xml:29:13-31:52
+78                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+78-->[androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\28e39af0de6ec8141aac58a549d5827a\transformed\lifecycle-process-2.6.2\AndroidManifest.xml:30:17-78
+79                android:value="androidx.startup" />
+79-->[androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\28e39af0de6ec8141aac58a549d5827a\transformed\lifecycle-process-2.6.2\AndroidManifest.xml:31:17-49
+80            <meta-data
+80-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:29:13-31:52
+81                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+81-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:30:17-85
+82                android:value="androidx.startup" />
+82-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:31:17-49
+83        </provider>
+84
+85        <receiver
+85-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:34:9-52:20
+86            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+86-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:35:13-76
+87            android:directBootAware="false"
+87-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:36:13-44
+88            android:enabled="true"
+88-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:37:13-35
+89            android:exported="true"
+89-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:38:13-36
+90            android:permission="android.permission.DUMP" >
+90-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:39:13-57
+91            <intent-filter>
+91-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:40:13-42:29
+92                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+92-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:17-91
+92-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:25-88
+93            </intent-filter>
+94            <intent-filter>
+94-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:43:13-45:29
+95                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+95-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:17-85
+95-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:25-82
+96            </intent-filter>
+97            <intent-filter>
+97-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:46:13-48:29
+98                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+98-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:17-88
+98-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:25-85
+99            </intent-filter>
+100            <intent-filter>
+100-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:49:13-51:29
+101                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+101-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:17-95
+101-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Verakit\.gradle\caches\9.0-milestone-1\transforms\aae21e583152428e81fd8385564328de\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:25-92
+102            </intent-filter>
+103        </receiver>
+104    </application>
+105
+106</manifest>

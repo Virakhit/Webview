@@ -1,10 +1,18 @@
 [
     {
-        "merged": "com.example.webviewapp-mergeDebugResources-3:/layout/activity_setup.xml",
-        "source": "com.example.webviewapp-main-6:/layout/activity_setup.xml"
+        "merged": "C:\\Users\\Verakit\\.gradle\\daemon\\9.0-milestone-1\\com.example.webviewapp-mergeDebugResources-3:\\layout\\activity_camera_capture.xml",
+        "source": "C:\\Users\\Verakit\\.gradle\\daemon\\9.0-milestone-1\\com.example.webviewapp-main-6:\\layout\\activity_camera_capture.xml"
     },
     {
-        "merged": "com.example.webviewapp-mergeDebugResources-3:/layout/activity_main.xml",
-        "source": "com.example.webviewapp-main-6:/layout/activity_main.xml"
+        "merged": "C:\\Users\\Verakit\\.gradle\\daemon\\9.0-milestone-1\\com.example.webviewapp-mergeDebugResources-3:\\layout\\activity_main.xml",
+        "source": "C:\\Users\\Verakit\\.gradle\\daemon\\9.0-milestone-1\\com.example.webviewapp-main-6:\\layout\\activity_main.xml"
+    },
+    {
+        "merged": "C:\\Users\\Verakit\\.gradle\\daemon\\9.0-milestone-1\\com.example.webviewapp-mergeDebugResources-3:\\layout\\activity_setup.xml",
+        "source": "C:\\Users\\Verakit\\.gradle\\daemon\\9.0-milestone-1\\com.example.webviewapp-main-6:\\layout\\activity_setup.xml"
+    },
+    {
+        "merged": "com.example.webviewapp-mergeDebugResources-3:/layout/activity_camera_capture.xml",
+        "source": "com.example.webviewapp-main-6:/layout/activity_camera_capture.xml"
     }
 ]
