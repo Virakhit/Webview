@@ -22,6 +22,7 @@ import java.util.Locale
 import android.view.KeyEvent
 import android.view.View
 import android.webkit.WebChromeClient
+import androidx.appcompat.app.AlertDialog
 import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
 import android.webkit.WebView
@@ -46,6 +47,29 @@ class MainActivity : AppCompatActivity() {
                 }
             } else {
                 // Permission denied: you can show a message or degrade functionality
+            }
+        }
+
+    // Launcher to request camera + audio permissions together
+    private val requestAudioCameraPermissionsLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { perms ->
+            val camGranted = perms[android.Manifest.permission.CAMERA] == true
+            val micGranted = perms[android.Manifest.permission.RECORD_AUDIO] == true
+            if (camGranted) {
+                // If there was a pending file chooser wanting camera capture, open it
+                if (pendingFileChooser != null) {
+                    openCameraPicker()
+                }
+            }
+            // If there was a pending web permission request, grant resources if camera (and audio if requested) granted
+            pendingPermissionRequest?.let { req ->
+                try {
+                    req.grant(req.resources)
+                } catch (e: Exception) {
+                    // ignore
+                } finally {
+                    pendingPermissionRequest = null
+                }
             }
         }
 
@@ -102,25 +126,19 @@ class MainActivity : AppCompatActivity() {
     // Request camera permission at runtime if needed
     checkAndRequestCameraPermission()
 
-        // Attempt to register device automatically by UUID; replace with your real API URL
-        val apiUrl = "https://example.com/api/device/register"
-        DeviceRegistrar.registerDevice(this, apiUrl) { registered ->
-            if (!registered && !Prefs.isConfigured(this)) {
-                // Not registered and no local config: open setup
-                startActivity(Intent(this, SetupActivity::class.java))
-                finish()
-                return@registerDevice
-            }
-
-            // Either registered (Prefs saved) or already configured
-            setContentView(R.layout.activity_main)
-            webView = findViewById(R.id.webView)
-            setupWebView()
-
-            val (company, brand, outlet) = Prefs.get(this)
-            val url = "https://cyberforall.net/GivyFE/$company,$brand,$outlet"
-            webView.loadUrl(url)
+        // Auto-fill fixed IDs and save into Prefs so SetupActivity is skipped
+        if (!Prefs.isConfigured(this)) {
+            Prefs.save(this, "00039", "00001", "00001")
         }
+
+        // Proceed to load WebView immediately (DeviceRegistrar may still run in background if needed)
+        setContentView(R.layout.activity_main)
+        webView = findViewById(R.id.webView)
+        setupWebView()
+
+        val (company, brand, outlet) = Prefs.get(this)
+        val url = "https://cyberforall.net/GivyFE/$company,$brand,$outlet"
+        webView.loadUrl(url)
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -223,18 +241,59 @@ class MainActivity : AppCompatActivity() {
 
     webView.webChromeClient = object : WebChromeClient() {
             override fun onPermissionRequest(request: PermissionRequest) {
-                // Called when a web page requests permission (e.g., camera via getUserMedia)
+                // Handle audio/video requests: request system permissions (CAMERA, RECORD_AUDIO)
+                // as needed, then grant the web permission request when system permissions are available.
                 runOnUiThread {
+                    val resources = request.resources ?: emptyArray()
+                    val needsVideo = resources.any { it == PermissionRequest.RESOURCE_VIDEO_CAPTURE }
+                    val needsAudio = resources.any { it == PermissionRequest.RESOURCE_AUDIO_CAPTURE }
+
+                    if (needsVideo || needsAudio) {
+                        // If both audio and video are needed, request both permissions together
+                        if (needsVideo && needsAudio) {
+                            pendingPermissionRequest = request
+                            requestAudioCameraPermissionsLauncher.launch(
+                                arrayOf(
+                                    android.Manifest.permission.CAMERA,
+                                    android.Manifest.permission.RECORD_AUDIO
+                                )
+                            )
+                            return@runOnUiThread
+                        }
+
+                        // Only video requested
+                        if (needsVideo) {
+                            val cameraPerm = android.Manifest.permission.CAMERA
+                            if (ContextCompat.checkSelfPermission(this@MainActivity, cameraPerm) == PackageManager.PERMISSION_GRANTED) {
+                                try { request.grant(request.resources) } catch (e: Exception) { }
+                            } else {
+                                pendingPermissionRequest = request
+                                requestCameraPermissionLauncher.launch(cameraPerm)
+                            }
+                            return@runOnUiThread
+                        }
+
+                        // Only audio requested
+                        if (needsAudio) {
+                            val micPerm = android.Manifest.permission.RECORD_AUDIO
+                            if (ContextCompat.checkSelfPermission(this@MainActivity, micPerm) == PackageManager.PERMISSION_GRANTED) {
+                                try { request.grant(request.resources) } catch (e: Exception) { }
+                            } else {
+                                pendingPermissionRequest = request
+                                // reuse the multiple-permission launcher to ask for mic only
+                                requestAudioCameraPermissionsLauncher.launch(
+                                    arrayOf(android.Manifest.permission.RECORD_AUDIO)
+                                )
+                            }
+                            return@runOnUiThread
+                        }
+                    }
+
+                    // Default: grant requested resources if app already has camera permission
                     val cameraPerm = android.Manifest.permission.CAMERA
                     if (ContextCompat.checkSelfPermission(this@MainActivity, cameraPerm) == PackageManager.PERMISSION_GRANTED) {
-                        // App already has camera permission -> grant the web request
-                        try {
-                            request.grant(request.resources)
-                        } catch (e: Exception) {
-                            // ignore
-                        }
+                        try { request.grant(request.resources) } catch (e: Exception) { }
                     } else {
-                        // Save pending request and ask the user for app-level camera permission
                         pendingPermissionRequest = request
                         requestCameraPermissionLauncher.launch(cameraPerm)
                     }
