@@ -102,19 +102,25 @@ class MainActivity : AppCompatActivity() {
     // Request camera permission at runtime if needed
     checkAndRequestCameraPermission()
 
-        if (!Prefs.isConfigured(this)) {
-            startActivity(Intent(this, SetupActivity::class.java))
-            finish()
-            return
+        // Attempt to register device automatically by UUID; replace with your real API URL
+        val apiUrl = "https://example.com/api/device/register"
+        DeviceRegistrar.registerDevice(this, apiUrl) { registered ->
+            if (!registered && !Prefs.isConfigured(this)) {
+                // Not registered and no local config: open setup
+                startActivity(Intent(this, SetupActivity::class.java))
+                finish()
+                return@registerDevice
+            }
+
+            // Either registered (Prefs saved) or already configured
+            setContentView(R.layout.activity_main)
+            webView = findViewById(R.id.webView)
+            setupWebView()
+
+            val (company, brand, outlet) = Prefs.get(this)
+            val url = "https://cyberforall.net/GivyFE/$company,$brand,$outlet"
+            webView.loadUrl(url)
         }
-
-        setContentView(R.layout.activity_main)
-        webView = findViewById(R.id.webView)
-        setupWebView()
-
-    val (company, brand, outlet) = Prefs.get(this)
-    val url = "https://cyberforall.net/DEV/GivyFE/$company,$brand,$outlet"
-        webView.loadUrl(url)
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
