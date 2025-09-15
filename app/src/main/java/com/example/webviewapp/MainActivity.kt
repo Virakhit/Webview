@@ -133,6 +133,14 @@ class MainActivity : AppCompatActivity() {
             val outlet = "00001"
             val url = "https://cyberforall.net/DEV/GivyFE/$company,$brand,$outlet"
             webView.loadUrl(url)
+            // Read device serial number (SN) and persist/log it for later API checks
+            try {
+                val serial = SerialUtil.getDeviceSerial(this)
+                android.util.Log.d("MainActivity", "Device serial: $serial")
+                Prefs.saveSerial(this, serial)
+            } catch (e: Exception) {
+                // ignore
+            }
         } else {
             // Attempt to register device automatically by UUID; replace with your real API URL
             val apiUrl = "https://example.com/api/device/register"
