@@ -14,26 +14,42 @@ object SerialUtil {
 
     // Try multiple strategies to obtain a hardware serial / SN
     fun getDeviceSerial(ctx: Context): String {
-        // 0. Prefer adb-like serial by reading getprop or specific properties via shell if available
-        // try {
-        //     val adbLike = getSerialFromGetProp()
-        //     Log.d(TAG, "getSerialFromGetProp => $adbLike")
-        //     if (!adbLike.isNullOrBlank()) return adbLike
-        // } catch (e: Exception) {
-        //     // ignore
-        // }
+        Log.d(TAG, "=== Serial Number Detection ===")
 
-    // 1. Skip Build.SERIAL/getSerial due to platform restrictions; prefer getprop/system properties
+        val finalSerial = getDeviceSerialInternal(ctx)
+        Log.d(TAG, "Final Selected Serial: $finalSerial")
+        return finalSerial
+    }
+    
+    private fun getDeviceSerialInternal(ctx: Context): String {
+        // 0. Priority method: vendor/system property that may contain SN (sys.product.sn often used)
+        try {
+            val propSerial = getSystemProperty("sys.product.sn")
+            Log.d(TAG, "sys.product.sn: $propSerial")
+            if (!propSerial.isNullOrBlank()) return propSerial
+        } catch (e: Exception) {
+            Log.e(TAG, "sys.product.sn check failed: ${e.message}")
+        }
+
+        // 1. Fallback to getprop method
+        try {
+            val adbLike = getSerialFromGetProp()
+            Log.d(TAG, "getprop-derived serial: $adbLike")
+            if (!adbLike.isNullOrBlank()) return adbLike
+        } catch (e: Exception) {
+            Log.e(TAG, "getprop check failed: ${e.message}")
+        }
 
         // 2. Common system properties used by POS vendors (sunmi/landis)
         try {
             val props = listOf("ro.serialno", "ro.boot.serialno", "persist.sys.serialno", "ro.product.serial", "ro.gsm.imei")
             for (p in props) {
                 val v = getSystemProperty(p)
+                Log.d(TAG, "property $p: $v")
                 if (!v.isNullOrBlank()) return v
             }
         } catch (e: Exception) {
-            // ignore
+            Log.e(TAG, "System properties check failed: ${e.message}")
         }
 
         // 3. Some devices expose serial in /sys/class/misc or /proc
@@ -47,6 +63,7 @@ object SerialUtil {
             )
             for (c in candidates) {
                 val v = readFirstLine(File(c))
+                Log.d(TAG, "file $c: $v")
                 if (!v.isNullOrBlank()) {
                     // If reading /proc/cpuinfo, search for serial line
                     if (c.endsWith("cpuinfo", ignoreCase = true)) {
@@ -58,13 +75,78 @@ object SerialUtil {
                 }
             }
         } catch (e: Exception) {
-            // ignore
+            Log.e(TAG, "File system check failed: ${e.message}")
         }
 
         // 4. Fallback to ANDROID_ID
         val androidId = Settings.Secure.getString(ctx.contentResolver, Settings.Secure.ANDROID_ID)
-        Log.d(TAG, "Falling back to ANDROID_ID: $androidId")
+    Log.d(TAG, "Falling back to ANDROID_ID: $androidId")
         return androidId ?: "unknown"
+    }
+    
+    // Function to get serial number using specific method for testing
+    fun getSerialByMethod(ctx: Context, method: String): String? {
+        Log.d(TAG, "Testing method: $method")
+        
+        return when (method.lowercase()) {
+            "sys_product_sn" -> getSystemProperty("sys.product.sn")
+            "build_serial" -> {
+                try {
+                    @Suppress("DEPRECATION")
+                    Build.SERIAL
+                } catch (e: Exception) {
+                    Log.e(TAG, "Build.SERIAL error: ${e.message}")
+                    null
+                }
+            }
+            "build_getserial" -> {
+                try {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        Build.getSerial()
+                    } else {
+                        null
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Build.getSerial() error: ${e.message}")
+                    null
+                }
+            }
+            "ro_serialno" -> getSystemProperty("ro.serialno")
+            "ro_boot_serialno" -> getSystemProperty("ro.boot.serialno")
+            "persist_sys_serialno" -> getSystemProperty("persist.sys.serialno")
+            "ro_product_serial" -> getSystemProperty("ro.product.serial")
+            "ro_gsm_imei" -> getSystemProperty("ro.gsm.imei")
+            "getprop" -> getSerialFromGetProp()
+            "android_id" -> Settings.Secure.getString(ctx.contentResolver, Settings.Secure.ANDROID_ID)
+            "cpuinfo" -> parseCpuInfoSerial(File("/proc/cpuinfo"))
+            "sys_serial" -> readFirstLine(File("/sys/class/android_usb/android0/iSerial"))
+            else -> {
+                Log.w(TAG, "Unknown method: $method")
+                null
+            }
+        }
+    }
+    
+    // Function to test all methods and return results map
+    fun testAllMethods(ctx: Context): Map<String, String?> {
+        Log.d(TAG, "=== Testing All Serial Number Methods ===")
+        
+        val methods = listOf(
+            "sys_product_sn", "build_serial", "build_getserial", "ro_serialno", "ro_boot_serialno",
+            "persist_sys_serialno", "ro_product_serial", "ro_gsm_imei", 
+            "getprop", "android_id", "cpuinfo", "sys_serial"
+        )
+        
+        val results = mutableMapOf<String, String?>()
+        
+        for (method in methods) {
+            val result = getSerialByMethod(ctx, method)
+            results[method] = result
+            Log.d(TAG, "Method [$method]: $result")
+        }
+        
+        Log.d(TAG, "=== Test Complete ===")
+        return results
     }
 
     // intentionally omitted Build.getSerial() / Build.SERIAL to avoid permission/deprecation issues
