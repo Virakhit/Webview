@@ -12,6 +12,10 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.webkit.CookieManager
+import android.view.View
+import android.view.ViewGroup
+import android.widget.FrameLayout
+import androidx.core.view.isVisible
 import android.webkit.PermissionRequest
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
@@ -21,6 +25,10 @@ import android.webkit.WebViewClient
 import org.json.JSONObject
 import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -35,6 +43,11 @@ class MainActivity : ComponentActivity(), WebAppInterface.CompanyInfoCallback {
     private var cameraImageUri: Uri? = null
     private lateinit var webView: WebView
     private lateinit var webAppInterface: WebAppInterface
+    // Activity Result launchers
+    private lateinit var cameraActivityLauncher: ActivityResultLauncher<Intent>
+    private lateinit var permissionLauncher: ActivityResultLauncher<String>
+    // splash overlay view reference
+    private var splashOverlayView: View? = null
 
     // ตัวแปรสำหรับเก็บ CompanyId, BrandId, OutletId
     private var companyId: String? = null
@@ -51,40 +64,108 @@ class MainActivity : ComponentActivity(), WebAppInterface.CompanyInfoCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Ask for camera permission at first launch
+        // register permission launcher
+        permissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            // nothing special to do here; WebView will request camera when needed
+        }
         requestCameraPermissionIfNeeded()
+
+        // register activity launcher for camera/file chooser
+        cameraActivityLauncher = registerForActivityResult(StartActivityForResult()) { result ->
+            val callback = filePathCallback
+            filePathCallback = null
+            if (callback == null) return@registerForActivityResult
+
+            if (result.resultCode != Activity.RESULT_OK) {
+                callback.onReceiveValue(null)
+                return@registerForActivityResult
+            }
+
+            val data = result.data
+            val results: Array<Uri>? = when {
+                // No data but we have a camera image URI
+                (data == null || data.data == null) && cameraImageUri != null -> arrayOf(cameraImageUri!!)
+
+                // Multiple items (e.g. when using a file manager)
+                data?.clipData != null -> {
+                    val clip = data.clipData!!
+                    Array(clip.itemCount) { i -> clip.getItemAt(i).uri }
+                }
+
+                // Single content URI returned
+                data?.data != null -> arrayOf(data.data!!)
+
+                else -> null
+            }
+
+            if (results != null) {
+                for (uri in results) {
+                    try {
+                        grantUriPermission(packageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    } catch (ignored: Exception) { }
+                }
+            }
+
+            callback.onReceiveValue(results)
+            cameraImageUri = null
+        }
 
         // Initialize WebAppInterface
         webAppInterface = WebAppInterface(this, this)
 
-        // Try to reuse a preloaded WebView stolen from SplashActivity
+        // Use an activity_main layout that hosts a WebView container and a splash overlay
+        setContentView(R.layout.activity_main)
+
+        val container = findViewById<FrameLayout>(R.id.webview_container)
+    splashOverlayView = try { findViewById<View>(R.id.splash_overlay) } catch (e: Exception) { null }
+
+    // Try to reuse a preloaded WebView stolen from SplashActivity
         val pre = WebViewHolder.stealWebView()
         if (pre != null) {
             webView = pre
-            // attach to this activity
-            setContentView(webView)
             // ensure settings and interfaces are present
             setupWebView(webView)
+
+            // attach to container (remove from previous parent if any)
+            try {
+                val parent = webView.parent
+                if (parent is ViewGroup) parent.removeView(webView)
+            } catch (ignored: Exception) { }
+            container.addView(webView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+
             if (savedInstanceState == null) {
-                // if preloaded already started loading, do not reload; otherwise load
-                if (!webView.url.isNullOrEmpty()) {
-                    // already loading
-                } else {
+                if (webView.url.isNullOrEmpty()) {
                     webView.loadUrl(TARGET_URL)
                 }
             } else {
                 webView.restoreState(savedInstanceState)
             }
+            // If preloaded page already finished (progress==100), hide overlay right away
+            try {
+                if (splashOverlayView != null && webView.progress >= 100) {
+                    splashOverlayView?.post { splashOverlayView?.visibility = View.GONE }
+                }
+            } catch (ignored: Exception) { }
         } else {
-            // Build a WebView programmatically
+            // Build a WebView programmatically and add into container
             webView = WebView(this)
-            setContentView(webView)
             setupWebView(webView)
+            container.addView(webView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
             if (savedInstanceState == null) {
                 webView.loadUrl(TARGET_URL)
             } else {
                 webView.restoreState(savedInstanceState)
             }
+            // If the page is already fully loaded, hide the overlay immediately
+            try {
+                if (splashOverlayView != null && webView.progress >= 100) {
+                    splashOverlayView?.post { splashOverlayView?.visibility = View.GONE }
+                }
+            } catch (ignored: Exception) { }
         }
+
+        // Keep the splash overlay visible until page finishes loading; WebViewClient will hide it
+        // If page loads quickly (preloaded), onPageFinished will be called and overlay will be removed.
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -152,6 +233,11 @@ class MainActivity : ComponentActivity(), WebAppInterface.CompanyInfoCallback {
 
                 // ส่งข้อมูล CompanyId, BrandId, OutletId ไปยัง Angular หากมี
                 sendCompanyInfoToWeb()
+
+                    // Hide splash overlay now that page finished loading
+                    try {
+                        splashOverlayView?.post { splashOverlayView?.visibility = View.GONE }
+                    } catch (ignored: Exception) { }
             }
 
             // Debug-only: accept SSL errors when running a debug build to allow testing
@@ -232,7 +318,8 @@ class MainActivity : ComponentActivity(), WebAppInterface.CompanyInfoCallback {
                         }
 
                         return try {
-                            startActivityForResult(takePictureIntent, FILE_CHOOSER_REQUEST_CODE)
+                            // Launch camera via Activity Result API
+                            cameraActivityLauncher.launch(takePictureIntent)
                             true
                         } catch (e: ActivityNotFoundException) {
                             this@MainActivity.filePathCallback = null
@@ -260,65 +347,25 @@ class MainActivity : ComponentActivity(), WebAppInterface.CompanyInfoCallback {
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == FILE_CHOOSER_REQUEST_CODE) {
-            val callback = filePathCallback
-            filePathCallback = null
-            if (callback == null) return
+    // Activity Result API handles file chooser results now; no onActivityResult override needed
 
-            if (resultCode != Activity.RESULT_OK) {
-                callback.onReceiveValue(null)
-                return
-            }
+    // Permission results handled by Activity Result API registered in onCreate
 
-            val results: Array<Uri>? = when {
-                // No data but we have a camera image URI
-                (data == null || data.data == null) && cameraImageUri != null -> arrayOf(cameraImageUri!!)
-
-                // Multiple items (e.g. when using a file manager)
-                data?.clipData != null -> {
-                    val clip = data.clipData!!
-                    Array(clip.itemCount) { i -> clip.getItemAt(i).uri }
-                }
-
-                // Single content URI returned
-                data?.data != null -> arrayOf(data.data!!)
-
-                else -> null
-            }
-
-            // If we returned a cameraImageUri, make sure WebView has permission to access it
-            if (results != null) {
-                for (uri in results) {
-                    try {
-                        grantUriPermission(packageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    } catch (ignored: Exception) { }
+    // Use OnBackPressedDispatcher instead of overriding onBackPressed
+    override fun onStart() {
+        super.onStart()
+        // add back pressed callback
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (::webView.isInitialized && webView.canGoBack()) {
+                    webView.goBack()
+                } else {
+                    // allow default behavior
+                    isEnabled = false
+                    onBackPressedDispatcher.onBackPressed()
                 }
             }
-
-            callback.onReceiveValue(results)
-            cameraImageUri = null
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
-            // No UI change needed here; WebView will be able to use camera when granted
-        }
-    }
-
-    override fun onBackPressed() {
-        if (::webView.isInitialized && webView.canGoBack()) {
-            webView.goBack()
-        } else {
-            super.onBackPressed()
-        }
+        })
     }
 
     // Read device serial from system properties with fallbacks
@@ -348,7 +395,8 @@ class MainActivity : ComponentActivity(), WebAppInterface.CompanyInfoCallback {
         } catch (ignored: Exception) { }
 
         // Last resort: hardware and build fields
-    val fallback = (Build.SERIAL ?: "")
+    // Build.SERIAL is deprecated; fall back to device model or "unknown"
+    val fallback = try { Build.MODEL ?: "" } catch (e: Exception) { "" }
         return fallback.ifEmpty { "unknown" }
     }
 
