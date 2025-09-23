@@ -19,7 +19,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.WebView_GivyFE">
         <activity
-            android:name=".MainActivity"
+            android:name=".SplashActivity"
             android:exported="true"
             android:screenOrientation="portrait"
             android:label="@string/app_name"
@@ -30,6 +30,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.WebView_GivyFE" />
 
         <!-- FileProvider for camera capture to work with WebView file chooser -->
         <provider

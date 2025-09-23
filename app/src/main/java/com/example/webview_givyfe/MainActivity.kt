@@ -56,14 +56,34 @@ class MainActivity : ComponentActivity(), WebAppInterface.CompanyInfoCallback {
         // Initialize WebAppInterface
         webAppInterface = WebAppInterface(this, this)
 
-        // Build a WebView programmatically
-        webView = WebView(this)
-        setContentView(webView)
-        setupWebView(webView)
-        if (savedInstanceState == null) {
-            webView.loadUrl(TARGET_URL)
+        // Try to reuse a preloaded WebView stolen from SplashActivity
+        val pre = WebViewHolder.stealWebView()
+        if (pre != null) {
+            webView = pre
+            // attach to this activity
+            setContentView(webView)
+            // ensure settings and interfaces are present
+            setupWebView(webView)
+            if (savedInstanceState == null) {
+                // if preloaded already started loading, do not reload; otherwise load
+                if (!webView.url.isNullOrEmpty()) {
+                    // already loading
+                } else {
+                    webView.loadUrl(TARGET_URL)
+                }
+            } else {
+                webView.restoreState(savedInstanceState)
+            }
         } else {
-            webView.restoreState(savedInstanceState)
+            // Build a WebView programmatically
+            webView = WebView(this)
+            setContentView(webView)
+            setupWebView(webView)
+            if (savedInstanceState == null) {
+                webView.loadUrl(TARGET_URL)
+            } else {
+                webView.restoreState(savedInstanceState)
+            }
         }
     }
 
