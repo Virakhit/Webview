@@ -57,8 +57,8 @@ class MainActivity : ComponentActivity(), WebAppInterface.CompanyInfoCallback {
     companion object {
         private const val FILE_CHOOSER_REQUEST_CODE = 1001
         private const val CAMERA_PERMISSION_REQUEST_CODE = 2001
-        // private const val TARGET_URL = "https://cyberforall.net/DEV/GivyFE/"
-        private const val TARGET_URL = "http://172.20.10.3:4200/register"
+        private const val TARGET_URL = "https://cyberforall.net/DEV/GivyFE/register"
+        // private const val TARGET_URL = "http://172.20.10.3:4200/register"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

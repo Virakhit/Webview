@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!--
+        Trust a custom CA / certificate for a specific domain only.
+        Place the PEM certificate in res/raw/cyberforall_cert.pem (PEM or DER).
+        Replace or remove this config in production if not required.
+    -->
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">cyberforall.net</domain>
+        <!-- Use certificate pinning by referencing a raw resource file containing the CA or leaf cert -->
+        <trust-anchors>
+            <!-- Use raw resource: @raw/cyberforall_cert -->
+            <certificates src="@raw/cyberforall_cert" />
+        </trust-anchors>
+    </domain-config>
+
+    <!-- Optionally keep default system trust for other domains -->
+    <base-config>
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

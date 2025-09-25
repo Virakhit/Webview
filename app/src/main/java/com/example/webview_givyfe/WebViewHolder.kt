@@ -9,7 +9,7 @@ import android.webkit.WebView
 
 object WebViewHolder {
     private const val TAG = "WebViewHolder"
-    private const val TARGET_URL = "http://172.20.10.3:4200/register"
+    private const val TARGET_URL = "https://cyberforall.net/DEV/GivyFE/register"
 
     private var _webView: WebView? = null
     val isLoaded: Boolean
