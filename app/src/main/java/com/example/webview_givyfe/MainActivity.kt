@@ -370,12 +370,28 @@ class MainActivity : ComponentActivity(), WebAppInterface.CompanyInfoCallback {
 
     // Read device serial from system properties with fallbacks
     private fun getDeviceSerial(): String {
-        // Try reading sys.product.sn via SystemProperties (reyflection), then fallbacks
+        // Try reading sys.product.sn via SystemProperties (reflection), then fallbacks
+        fun isInvalidSerial(s: String?): Boolean {
+            val v = s?.trim()?.lowercase(Locale.US) ?: return true
+            if (v.isEmpty()) return true
+            if (v == "null" || v == "unknown") return true
+            // reject serials that are all zeros or single zero
+            if (v.matches(Regex("^0+$"))) return true
+            return false
+        }
+
         try {
             val spClass = Class.forName("android.os.SystemProperties")
             val getMethod = spClass.getMethod("get", String::class.java, String::class.java)
-            val sn = getMethod.invoke(null, "sys.product.sn", "") as String
-            if (!sn.isNullOrEmpty()) return sn
+            val sn = try {
+                getMethod.invoke(null, "sys.product.sn", "") as? String
+            } catch (e: Exception) {
+                null
+            }
+            if (!isInvalidSerial(sn)) {
+                Log.d("MainActivity", "getDeviceSerial: using sys.product.sn='$sn'")
+                return sn!!.trim()
+            }
         } catch (ignored: Exception) {
         }
 
@@ -386,24 +402,39 @@ class MainActivity : ComponentActivity(), WebAppInterface.CompanyInfoCallback {
             val buildClass = Build::class.java
             try {
                 val getSerialMethod = buildClass.getMethod("getSerial")
-                val serialObj = getSerialMethod.invoke(null)
-                val sn = (serialObj as? String) ?: ""
-                if (sn.isNotEmpty()) return sn
+                val serialObj = try {
+                    getSerialMethod.invoke(null)
+                } catch (e: Exception) {
+                    null
+                }
+                val sn = (serialObj as? String)
+                if (!isInvalidSerial(sn)) {
+                    Log.d("MainActivity", "getDeviceSerial: using Build.getSerial()='$sn'")
+                    return sn!!.trim()
+                }
             } catch (e: NoSuchMethodException) {
                 // Method not available, continue to other fallbacks
             }
         } catch (ignored: Exception) { }
 
         // Last resort: hardware and build fields
-    // Build.SERIAL is deprecated; fall back to device model or "unknown"
-    val fallback = try { Build.MODEL ?: "" } catch (e: Exception) { "" }
-        return fallback.ifEmpty { "unknown" }
+        // Build.SERIAL is deprecated; fall back to device model or "unknown"
+        val fallback = try { Build.MODEL ?: "" } catch (e: Exception) { "" }
+        val final = fallback.ifEmpty { "unknown" }
+        Log.d("MainActivity", "getDeviceSerial: falling back to '$final'")
+        return final
     }
 
     // Send the serial to the page via evaluateJavascript (escapes string)
     private fun sendSerialToWeb(serial: String) {
         if (!::webView.isInitialized) return
-    val quoted = org.json.JSONObject.quote(serial)
+        // Sanitize common bad values coming from platform
+        val cleaned = when (serial.trim().lowercase(Locale.US)) {
+            "", "null", "unknown" -> ""
+            else -> serial.trim()
+        }
+        Log.d("MainActivity", "sendSerialToWeb: sending serial='$cleaned'")
+    val quoted = org.json.JSONObject.quote(cleaned)
         val js = "window.onNativeSerial && window.onNativeSerial($quoted);"
         webView.post {
             webView.evaluateJavascript(js, null)
