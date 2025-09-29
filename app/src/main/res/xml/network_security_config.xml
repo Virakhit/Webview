@@ -14,8 +14,8 @@
         </trust-anchors>
     </domain-config>
 
-    <!-- Optionally keep default system trust for other domains -->
-    <base-config>
+    <!-- Optionally keep default system trust for other domains and allow cleartext for dev/testing -->
+    <base-config cleartextTrafficPermitted="true">
         <trust-anchors>
             <certificates src="system" />
         </trust-anchors>
