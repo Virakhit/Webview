@@ -208,6 +208,14 @@ class MainActivity : ComponentActivity(), WebAppInterface.CompanyInfoCallback {
         // เพิ่ม JavaScript Interface
         webView.addJavascriptInterface(webAppInterface, "AndroidInterface")
 
+        // Try to push serial immediately after interface is available so page can read it early
+        try {
+            webView.post {
+                val serialEarly = getDeviceSerial()
+                sendSerialToWeb(serialEarly)
+            }
+        } catch (ignored: Exception) { }
+
         CookieManager.getInstance().setAcceptCookie(true)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true)
