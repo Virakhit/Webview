@@ -7,9 +7,10 @@
     -->
     <domain-config cleartextTrafficPermitted="false">
         <domain includeSubdomains="true">cyberforall.net</domain>
-        <!-- Use system trust anchors instead of a bundled cert so certificate rotations don't break the app -->
+        <!-- Use certificate pinning by referencing a raw resource file containing the CA or leaf cert -->
         <trust-anchors>
-            <certificates src="system" />
+            <!-- Use raw resource: @raw/cyberforall_cert -->
+            <certificates src="@raw/cyberforall_cert" />
         </trust-anchors>
     </domain-config>
 
