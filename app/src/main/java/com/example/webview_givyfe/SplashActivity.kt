@@ -8,8 +8,7 @@ import android.widget.ImageView
 import androidx.activity.ComponentActivity
 
 class SplashActivity : ComponentActivity() {
-    // splash duration in ms: keep for ~3 seconds while preloading WebView
-    private val SPLASH_MS = 3000L
+    private val SPLASH_MS = 3000L //Splash Screen 3 วินาที
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
